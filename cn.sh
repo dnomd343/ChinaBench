@@ -88,7 +88,7 @@ speedtest_setup() {
     [[ -e './st-temp/speedtest' ]] && return
     echo -e "正在获取Speedtest-cli...\c"
     mkdir -p ./st-temp/speedtest-cli
-    wget --no-check-certificate -qO ./st-temp/speedtest.tgz https://bintray.com/ookla/download/download_file?file_path=ookla-speedtest-1.0.0-$(uname -m)-linux.tgz > /dev/null 2>&1
+    wget --no-check-certificate -qO ./st-temp/speedtest.tgz https://install.speedtest.net/app/cli/ookla-speedtest-1.0.0-$(uname -m)-linux.tgz > /dev/null 2>&1
     tar zxvf ./st-temp/speedtest.tgz -C ./st-temp/speedtest-cli/ > /dev/null 2>&1
     mv ./st-temp/speedtest-cli/speedtest ./st-temp/speedtest-cli/speedtest.5 ./st-temp/
     chmod a+rx ./st-temp/speedtest
@@ -103,20 +103,20 @@ speedtest_setup() {
 }
 
 get_server() {
-	echo -e "正在获取服务器列表...\c"
-	rm -f ./st-temp/ALL.dat
-	rm -f ./st-temp/DX.dat
-	rm -f ./st-temp/LT.dat
-	rm -f ./st-temp/YD.dat
+    echo -e "正在获取服务器列表...\c"
+    rm -f ./st-temp/ALL.dat
+    rm -f ./st-temp/DX.dat
+    rm -f ./st-temp/LT.dat
+    rm -f ./st-temp/YD.dat
     wget -P ./st-temp/ https://st.343.re/cn/ALL.dat > /dev/null 2>&1
-	wget -P ./st-temp/ https://st.343.re/cn/DX.dat > /dev/null 2>&1
-	wget -P ./st-temp/ https://st.343.re/cn/LT.dat > /dev/null 2>&1
-	wget -P ./st-temp/ https://st.343.re/cn/YD.dat > /dev/null 2>&1
+    wget -P ./st-temp/ https://st.343.re/cn/DX.dat > /dev/null 2>&1
+    wget -P ./st-temp/ https://st.343.re/cn/LT.dat > /dev/null 2>&1
+    wget -P ./st-temp/ https://st.343.re/cn/YD.dat > /dev/null 2>&1
     [[ ! -e './st-temp/ALL.dat' ]] && echo -e "${RED}ERROR${PLAIN}" && clear_env && exit 1
-	[[ ! -e './st-temp/DX.dat' ]] && echo -e "${RED}ERROR${PLAIN}" && clear_env && exit 1
+    [[ ! -e './st-temp/DX.dat' ]] && echo -e "${RED}ERROR${PLAIN}" && clear_env && exit 1
     [[ ! -e './st-temp/LT.dat' ]] && echo -e "${RED}ERROR${PLAIN}" && clear_env && exit 1
     [[ ! -e './st-temp/YD.dat' ]] && echo -e "${RED}ERROR${PLAIN}" && clear_env && exit 1
-	echo -e "${GREEN}OK${PLAIN}"
+    echo -e "${GREEN}OK${PLAIN}"
 }
 
 load_server() {
@@ -138,23 +138,23 @@ select_isp() {
     echo -e "${GREEN}4.${PLAIN} 移动节点"
     echo -e "${GREEN}5.${PLAIN} 取消测速\c"
     while :; do echo
-		read -p "请选择: " selection
-		if [[ ! $selection =~ ^[1-5]$ ]]; then
-			echo -e "${RED}输入无效${PLAIN}\c"
-		else
-			break   
-	    fi
-	done
-	[[ ${selection} == 5 ]] && clear_env && exit 1
-	[[ ${selection} == 1 ]] && load_server './st-temp/ALL.dat'
-	[[ ${selection} == 2 ]] && load_server './st-temp/DX.dat'
-	[[ ${selection} == 3 ]] && load_server './st-temp/LT.dat'
-	[[ ${selection} == 4 ]] && load_server './st-temp/YD.dat'
+        read -p "请选择: " selection
+        if [[ ! $selection =~ ^[1-5]$ ]]; then
+            echo -e "${RED}输入无效${PLAIN}\c"
+        else
+            break
+        fi
+    done
+    [[ ${selection} == 5 ]] && clear_env && exit 1
+    [[ ${selection} == 1 ]] && load_server './st-temp/ALL.dat'
+    [[ ${selection} == 2 ]] && load_server './st-temp/DX.dat'
+    [[ ${selection} == 3 ]] && load_server './st-temp/LT.dat'
+    [[ ${selection} == 4 ]] && load_server './st-temp/YD.dat'
 }
 
 speedtest() {
     speedLog="./st-temp/speedtest.log"
-	touch $speedLog
+    touch $speedLog
     ./st-temp/speedtest -p no -s $1 --accept-license > $speedLog 2>&1
     echo -en "\r"
     echo -en "                                                          "
@@ -185,10 +185,10 @@ runtest() {
     echo "——————————————————————————————————————————————————————————"
     echo "ID    测速服务器信息       上传/Mbps   下载/Mbps   延迟/ms"
     start=$(date +%s)
-	for ((i=1;i<=$server_num;i++)) do
+    for ((i=1;i<=$server_num;i++)) do
         echo -e "正在测试 ${YELLOW}${isp_arr[i]}|${PLAIN}${GREEN}${addr_arr[i]}${PLAIN} ...\c"
         speedtest  ${id_arr[i]} ${addr_arr[i]} ${isp_arr[i]}
-	done
+    done
     end=$(date +%s)
     echo "——————————————————————————————————————————————————————————"
     time=$(( $end - $start ))
@@ -207,21 +207,17 @@ clear_env() {
 }
 
 init() {
-	check_root
-	check_system
-	python_setup
-	curl_setup
-	wget_setup
-	speedtest_setup
-	get_server
+    check_root
+    check_system
+    python_setup
+    curl_setup
+    wget_setup
+    speedtest_setup
+    get_server
 }
 
-main() {
-	init
-	select_isp
-	clear
-	runtest
-    clear_env
-}
-
-main
+init
+select_isp
+clear
+runtest
+clear_env
