@@ -76,10 +76,10 @@ speedtest_setup() {
 server_list() {
   echo -n "Getting server list..."
   rm -f ./st-temp/*.list
-  curl -sL "https://st.343.re/cn/ALL.dat" > ./st-temp/ALL.list
-  curl -sL "https://st.343.re/cn/DX.dat" > ./st-temp/DX.list
-  curl -sL "https://st.343.re/cn/LT.dat" > ./st-temp/LT.list
-  curl -sL "https://st.343.re/cn/YD.dat" > ./st-temp/YD.list
+  curl -sL "https://st.343.re/cn/ALL.list" > ./st-temp/ALL.list
+  curl -sL "https://st.343.re/cn/DX.list" > ./st-temp/DX.list
+  curl -sL "https://st.343.re/cn/LT.list" > ./st-temp/LT.list
+  curl -sL "https://st.343.re/cn/YD.list" > ./st-temp/YD.list
   [[ ! -e './st-temp/ALL.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/DX.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/LT.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
