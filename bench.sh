@@ -61,7 +61,7 @@ speedtest_setup() {
   html=$(curl -sL "https://www.speedtest.net/apps/cli" --user-agent "${user_agent}")
   version=$(echo "$html" | grep -oP 'ookla-speedtest-.*?-' | head -n 1 | cut -b 17- | rev | cut -c 2- | rev)
   url="https://install.speedtest.net/app/cli/ookla-speedtest-${version}-linux-$(uname -m).tgz"
-  mkdir ./st-temp/ && cd ./st-temp || exit 1
+  mkdir -p ./st-temp/ && cd ./st-temp || exit 1
   curl "${url}" -o ./speedtest.tgz > /dev/null 2>&1
   tar xf ./speedtest.tgz speedtest && rm -f ./speedtest.tgz
   cd ../
@@ -80,10 +80,12 @@ server_list() {
   curl -sL "https://st.343.re/cn/DX.list" > ./st-temp/DX.list
   curl -sL "https://st.343.re/cn/LT.list" > ./st-temp/LT.list
   curl -sL "https://st.343.re/cn/YD.list" > ./st-temp/YD.list
+  curl -sL "https://st.343.re/cn/CN.list" > ./st-temp/CN.list
   [[ ! -e './st-temp/ALL.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/DX.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/LT.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/YD.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
+  [[ ! -e './st-temp/CN.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   echo -e "${GREEN}OK${SUFFIX}"
 }
 
@@ -119,7 +121,7 @@ select_isp() {
   [[ ${selection} == 2 ]] && load_servers './st-temp/DX.list'
   [[ ${selection} == 3 ]] && load_servers './st-temp/LT.list'
   [[ ${selection} == 4 ]] && load_servers './st-temp/YD.list'
-  [[ ${selection} == 4 ]] && load_servers './st-temp/CN.list'
+  [[ ${selection} == 5 ]] && load_servers './st-temp/CN.list'
 }
 
 speedtest() {
@@ -129,17 +131,21 @@ speedtest() {
   touch $speed_log
   node_loc="$2　　　　　　"
   ./st-temp/speedtest -p no -s "$1" --accept-license > $speed_log 2>&1
+  if [ "$3" == "教育网" ]; then
+    printf "${RED}%-6s${YELLOW}%s%s${GREEN}%-21s${SUFFIX}" "$1" "$3" "|" "${node_loc:0:21}"
+  else
+    printf "${RED}%-6s${YELLOW}%s%s${GREEN}%-24s${SUFFIX}" "$1" "$3" "|" "${node_loc:0:24}"
+  fi
   if grep 'Upload' "$speed_log" > /dev/null 2>&1; then
     latency=$(awk -F " " '/Latency/{print $2}' "$speed_log")
     download=$(awk -F " " '/Download/{print $3}' "$speed_log")
     upload=$(awk -F " " '/Upload/{print $3}' "$speed_log")
     temp=$(echo "${download}" | awk -F ' ' '{print $1}')
     if [[ $(awk -v num1="${temp}" -v num2=0 'BEGIN{print(num1>num2)?"1":"0"}') -eq 1 ]]; then
-      printf "${RED}%-6s${YELLOW}%s%s${GREEN}%-24s${CYAN}%s%-10s${BLUE}%s%-10s${PURPLE}%-8s${SUFFIX}\n" \
-        "$1" "$3" "|" "${node_loc:0:24}" "↑ " "${upload}" "↓ " "${download}" "${latency}"
+      printf "${CYAN}%s%-10s${BLUE}%s%-10s${PURPLE}%-8s${SUFFIX}\n" "↑ " "${upload}" "↓ " "${download}" "${latency}"
     fi
   else
-    printf "${RED}%-6s${YELLOW}%s%s${GREEN}%-24s${RED}%s${SUFFIX}\n" "$1" "$3" "|" "${node_loc:0:24}" "ERROR"
+    printf "${RED}%s${SUFFIX}\n" "ERROR"
   fi
 }
 
