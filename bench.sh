@@ -76,12 +76,10 @@ speedtest_setup() {
 server_list() {
   echo -n "Getting server list..."
   rm -f ./st-temp/*.list
-  curl -sL "https://st.343.re/cn/ALL.list" > ./st-temp/ALL.list
   curl -sL "https://st.343.re/cn/DX.list" > ./st-temp/DX.list
   curl -sL "https://st.343.re/cn/LT.list" > ./st-temp/LT.list
   curl -sL "https://st.343.re/cn/YD.list" > ./st-temp/YD.list
   curl -sL "https://st.343.re/cn/CN.list" > ./st-temp/CN.list
-  [[ ! -e './st-temp/ALL.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/DX.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/LT.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
   [[ ! -e './st-temp/YD.list' ]] && echo -e "${RED}ERROR${SUFFIX}" && clear_env && exit 2
@@ -102,26 +100,24 @@ load_servers() {
 }
 
 select_isp() {
-  echo -e "${GREEN}1.${SUFFIX} 三网测速"
+  echo -e "${GREEN}1.${SUFFIX} 全部节点"
   echo -e "${GREEN}2.${SUFFIX} 电信节点"
   echo -e "${GREEN}3.${SUFFIX} 联通节点"
   echo -e "${GREEN}4.${SUFFIX} 移动节点"
-  echo -e "${GREEN}5.${SUFFIX} 国内测速"
   echo -e "${GREEN}0.${SUFFIX} 取消测速\c"
   while :; do echo
     read -rp "请选择: " selection
-    if [[ ! $selection =~ ^[0-5]$ ]]; then
+    if [[ ! $selection =~ ^[0-4]$ ]]; then
       echo -e "${RED}输入无效${SUFFIX}\c"
     else
       break
     fi
   done
   [[ ${selection} == 0 ]] && clear_env && exit 1
-  [[ ${selection} == 1 ]] && load_servers './st-temp/ALL.list'
+  [[ ${selection} == 1 ]] && load_servers './st-temp/CN.list'
   [[ ${selection} == 2 ]] && load_servers './st-temp/DX.list'
   [[ ${selection} == 3 ]] && load_servers './st-temp/LT.list'
   [[ ${selection} == 4 ]] && load_servers './st-temp/YD.list'
-  [[ ${selection} == 5 ]] && load_servers './st-temp/CN.list'
 }
 
 speedtest() {
