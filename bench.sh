@@ -104,20 +104,22 @@ select_isp() {
   echo -e "${GREEN}2.${SUFFIX} 电信节点"
   echo -e "${GREEN}3.${SUFFIX} 联通节点"
   echo -e "${GREEN}4.${SUFFIX} 移动节点"
-  echo -e "${GREEN}5.${SUFFIX} 取消测速\c"
+  echo -e "${GREEN}5.${SUFFIX} 国内测速"
+  echo -e "${GREEN}0.${SUFFIX} 取消测速\c"
   while :; do echo
     read -rp "请选择: " selection
-    if [[ ! $selection =~ ^[1-5]$ ]]; then
+    if [[ ! $selection =~ ^[0-5]$ ]]; then
       echo -e "${RED}输入无效${SUFFIX}\c"
     else
       break
     fi
   done
-  [[ ${selection} == 5 ]] && clear_env && exit 1
+  [[ ${selection} == 0 ]] && clear_env && exit 1
   [[ ${selection} == 1 ]] && load_servers './st-temp/ALL.list'
   [[ ${selection} == 2 ]] && load_servers './st-temp/DX.list'
   [[ ${selection} == 3 ]] && load_servers './st-temp/LT.list'
   [[ ${selection} == 4 ]] && load_servers './st-temp/YD.list'
+  [[ ${selection} == 4 ]] && load_servers './st-temp/CN.list'
 }
 
 speedtest() {
